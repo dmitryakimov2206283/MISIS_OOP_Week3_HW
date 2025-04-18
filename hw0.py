@@ -13,3 +13,42 @@ Animal (базовый класс)
         Snake
         Turtle
 """
+
+class Animal():
+    pass
+
+
+
+class Mammal(Animal):
+    pass
+
+class Dog(Mammal):
+    pass
+
+class Cat(Mammal):
+    pass
+
+class Horse(Mammal):
+    pass
+
+
+
+class Bird(Animal):
+    pass
+
+class Eagle(Bird):
+    pass
+
+class Penguin(Bird):
+    pass
+
+
+
+class Reptile(Animal):
+    pass
+
+class Snake(Reptile):
+    pass
+
+class Turtle(Reptile):
+    pass
