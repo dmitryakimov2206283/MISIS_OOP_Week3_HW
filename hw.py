@@ -33,6 +33,19 @@ class Movable(ABC):
 
 # Наследники от базовых классов
 class Character(GameObject, Movable):
+    """
+    Если изменить наследование с (GameObject, Movable) на (Movable, GameObject) то в работе программы ничего не изменится.
+    Она будет запускаться так же корректно как и до изменения наследования. Благодаря разрешению методов (MRO) python определит,
+    что в строке super().__init__(x, y, name) нужно вызвать конструктор класса GameObject. Так как данный конструктор имеет сигнатуру, 
+    отличную от класса Movable (что делает его уникальным в рамках линеаризации класса) во время разрешения методов он будет разрешен
+    корректно.
+
+    Однако, стоит отметить что изменение наследования повлияет на линеаризацию классов следующим образом:
+        (GameObject, Movable): Character -> GameObject -> Movable
+        (Movable, GameObject): Character -> Movable -> GameObject
+
+    Другими словами, во время разрешения методов их поиск будет производиться сначала в классе Movable и только затем в классе GameObject.
+    """
     def __init__(self, x, y, name, health):
         super().__init__(x, y, name)
         self.health = health
@@ -73,6 +86,34 @@ class Enemy(Character):
     def attack(self, target):
         target.health -= self.damage
         print(f"{self.name} attacked {target.name} for {self.damage} damage")
+
+class Boss(Enemy):
+    def __init__(self, x, y, name, health, damage):
+        super().__init__(x, y, name, health, damage)
+        self.health = self.health * 1.3
+
+    def super_attack(self, target):
+        target.health -= self.damage * 1.2
+        print(f"{self.name} did a super attack on {target.name} for {self.damage} damage!")
+
+    def heal(self):
+        self.health += self.health * 0.2
+
+    def summon_allies(self):
+        num = random.randint(1, 3)
+        allies = [self.__rand_ally() for _ in range(num)]
+
+        return allies
+
+    def __rand_ally(self):
+        return Enemy(
+            random.randint(0, 500),
+            random.randint(0, 500),
+            f"{self.name}'s summon",
+            random.randint(8, 12),
+            random.randint(3, 5)
+        )
+
 
 class Item(GameObject):
     def __init__(self, x, y, name, value):
@@ -116,7 +157,20 @@ def game_loop(player, enemies, items, turns=5):
         dx = random.randint(-1, 1)
         dy = random.randint(-1, 1)
         player.move(dx, dy)
-    
+
     print("\n=== GAME END ===")
     print(f"Final score: {player.score}")
     print(f"Player health: {player.health}")
+
+
+
+player = Player(10, 10, "Steel warrior", 100)
+
+greatsword = Item(70, 88, "Blackmetal greatsword", 25)
+healing_potion = Item(66, 88, "Healing posion", 8)
+
+skeleton1 = Enemy(10, 40, "Skeleton", 10, 3)
+skeleton2 = Enemy(24, 52, "Skeleton", 10, 3)
+slime = Enemy(12, 63, "Slime", 20, 5)
+
+game_loop(player, [skeleton1, skeleton2, slime], [greatsword, healing_potion])
