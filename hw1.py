@@ -1,11 +1,47 @@
-class TextFile:
-    pass
+from abc import abstractmethod
 
-class Database:
-    pass
 
-class NetworkResource:
-    pass
+class DataSource:
+    @abstractmethod
+    def read(self):
+        pass
+
+    @abstractmethod
+    def write(self):
+        pass
+
+class TextFile(DataSource):
+    def __init__(self, name):
+        self.__content = ""
+        self.__name = name
+
+    def read(self):
+        return self.__content
+    
+    def write(self, data):
+        self.__content = data
+
+class Database(DataSource):
+    def __init__(self, name):
+        self.__data = []
+        self.__name = name
+
+    def read(self):
+        return self.__data
+    
+    def write(self, data):
+        self.__data.append(data)
+
+class NetworkResource(DataSource):
+    def __init__(self, url):
+        self.__data = ""
+        self.__url = url
+
+    def read(self):
+        return self.__data
+    
+    def write(self, data):
+        self.__data = data
 
 #DON'T TOUCH UNDER THE LINE
 #______________________________________________________________
